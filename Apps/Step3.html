@@ -19,6 +19,8 @@
 <body>
   <div id="cesiumContainer"></div>
   <script>
+    Cesium.Camera.DEFAULT_VIEW_RECTANGLE = Cesium.Rectangle.fromDegrees(117.940573,-29.808406,118.313421,-29.468825);
+    Cesium.Camera.DEFAULT_VIEW_FACTOR = 0;
     var viewer = new Cesium.Viewer('cesiumContainer', {
       baseLayerPicker: false, 
       geocoder: false
