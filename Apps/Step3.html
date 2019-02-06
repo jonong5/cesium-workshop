@@ -19,7 +19,10 @@
 <body>
   <div id="cesiumContainer"></div>
   <script>
-    var viewer = new Cesium.Viewer('cesiumContainer');
+    var viewer = new Cesium.Viewer('cesiumContainer', {
+      baseLayerPicker: false, 
+      geocoder: false
+    });
   </script>
 </body>
 </html>
