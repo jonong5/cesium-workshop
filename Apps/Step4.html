@@ -19,7 +19,35 @@
 <body>
   <div id="cesiumContainer"></div>
   <script>
-    var viewer = new Cesium.Viewer('cesiumContainer');
+    Cesium.Camera.DEFAULT_VIEW_RECTANGLE = Cesium.Rectangle.fromDegrees(103.6, 1.2, 104.0, 1.5);
+    Cesium.Camera.DEFAULT_VIEW_FACTOR = 0;
+    var viewer = new Cesium.Viewer('cesiumContainer', {
+      imageryProvider: new Cesium.UrlTemplateImageryProvider({
+        url: "http://localhost:8080/Tiles/{z}/{y}/{z}_y{y}_x{x}.png"
+      }),
+      baseLayerPicker: false,
+      geocoder: false
+    });
+
+    var cameraDataSource = new Cesium.GeoJsonDataSource();
+		cameraDataSource.load('/Data/geojson/camera.geojson').then(function(dataSource) {
+			var entities = dataSource.entities.values;
+			for (var i = 0; i < entities.length; i++) {
+        var entity = entities[i];
+        var billboard = new Cesium.BillboardGraphics();
+		    billboard.image = new Cesium.ConstantProperty('/Data/icons/camera.png');
+        entity.billboard = billboard;
+
+        /* Step 4a: Define image name */
+
+        /* Step 4b: Define image path */
+        
+        /* Step 4c: Modify infobox description to display actual image instead of metadata */
+
+			}
+    });
+    viewer.dataSources.add(cameraDataSource);
+
   </script>
 </body>
 </html>
