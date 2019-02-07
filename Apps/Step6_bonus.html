@@ -14,14 +14,20 @@
       html, body, #cesiumContainer {
           width: 100%; height: 100%; margin: 0; padding: 0; overflow: hidden;
       }
-      /* Step 5b: Add CSS for layer menu */
-
+      .menu {
+        position: absolute;
+        z-index: 1000;
+        margin: 1.5em;
+        padding: 1.5em;
+        background: #ebedf4;
+      }
   </style>
 </head>
 <body>
   
-  <!-- Step 5a: Add HTML checkbox to toggle layer --> 
-
+  <div class="menu">
+    <div>Traffic Cameras<input type="checkbox" id="cameraCheckbox" checked onclick="toggleLayer(cameraCheckbox, cameraDataSource);" /></div>
+  </div>
 
   <div id="cesiumContainer"></div>
   <script>
@@ -52,7 +58,40 @@
     });
     viewer.dataSources.add(cameraDataSource);
 
-    /* Step 5c: Add function to toggle layer when checkbox is clicked */
+    function toggleLayer(id, dataSource) {
+			if (id.checked) {
+				if (!viewer.dataSources.contains(dataSource)) {
+          viewer.dataSources.add(dataSource);
+        }
+			} else {
+				if (viewer.dataSources.contains(dataSource)) {
+          viewer.dataSources.remove(dataSource);
+        }
+			}
+    }
+    
+    /* Step 6a: Add sample function to create 3D model */
+    /*
+    function createModel(dLon, dLat, dHeight, dHeading, dPitch, url) {
+      var position = Cesium.Cartesian3.fromDegrees(dLon, dLat, dHeight);
+      var heading = Cesium.Math.toRadians(dHeading);
+      var pitch = Cesium.Math.toRadians(dPitch);
+      var roll = 0;
+      var hpr = new Cesium.HeadingPitchRoll(heading, pitch, roll);
+      var orientation = Cesium.Transforms.headingPitchRollQuaternion(position, hpr);
+      var entity = viewer.entities.add({
+        name : url,
+        position : position,
+        orientation : orientation,
+        model : {
+          uri : url
+        }
+      });
+      viewer.trackedEntity = entity;
+    }
+    */
+    /* Step 6b: Create the 3D model */
+    // createModel(104.006539, 1.338092, 10.0, 115, 10, '/Data/models/air.glb');
 
   </script>
 
