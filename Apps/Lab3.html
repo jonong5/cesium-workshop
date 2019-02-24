@@ -19,12 +19,26 @@
 <body>
   <div id="cesiumContainer"></div>
   <script>
-    Cesium.Camera.DEFAULT_VIEW_RECTANGLE = Cesium.Rectangle.fromDegrees(117.940573,-29.808406,118.313421,-29.468825);
+    Cesium.Camera.DEFAULT_VIEW_RECTANGLE = Cesium.Rectangle.fromDegrees(103.6, 1.2, 104.0, 1.5);
     Cesium.Camera.DEFAULT_VIEW_FACTOR = 0;
     var viewer = new Cesium.Viewer('cesiumContainer', {
-      baseLayerPicker: false, 
+      imageryProvider: new Cesium.UrlTemplateImageryProvider({
+        url: "http://localhost:8080/Tiles/{z}/{y}/{z}_y{y}_x{x}.png"
+      }),
+      baseLayerPicker: false,
       geocoder: false
     });
+    
+    /* Step 3a: Create new data source for traffic camera */
+
+    /* Step 3b: Load data from GeoJSON file */
+
+      /* Step 3c: Loop through all loaded entities */
+
+        /* Step 3d: Create billboard icon for each data point */
+    
+    /* Step 3e: Add datasource to Cesium viewer to be displayed */
+    
   </script>
 </body>
 </html>

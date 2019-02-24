@@ -14,9 +14,21 @@
       html, body, #cesiumContainer {
           width: 100%; height: 100%; margin: 0; padding: 0; overflow: hidden;
       }
+      .menu {
+        position: absolute;
+        z-index: 1000;
+        margin: 1.5em;
+        padding: 1.5em;
+        background: #ebedf4;
+      }
   </style>
 </head>
 <body>
+  
+  <div class="menu">
+    <div>Traffic Cameras<input type="checkbox" id="cameraCheckbox" checked onclick="toggleLayer(cameraCheckbox, cameraDataSource);" /></div>
+  </div>
+
   <div id="cesiumContainer"></div>
   <script>
     Cesium.Camera.DEFAULT_VIEW_RECTANGLE = Cesium.Rectangle.fromDegrees(103.6, 1.2, 104.0, 1.5);
@@ -38,14 +50,46 @@
 		    billboard.image = new Cesium.ConstantProperty('/Data/icons/camera.png');
         entity.billboard = billboard;
 
-        /* Step 4a: Define image path */
-        
-        /* Step 4b: Modify infobox description to display actual image instead of metadata */
-
+				var imagePath = '/Data/images/' + entity.properties.images;
+        entity.description = '<table width="200" height="280">' +
+								'<tr><td colspan="2"><img src="' + imagePath + '" width="300"/></td></tr>' +
+                '</table>';
 			}
     });
     viewer.dataSources.add(cameraDataSource);
 
+    function toggleLayer(id, dataSource) {
+			if (id.checked) {
+				if (!viewer.dataSources.contains(dataSource)) {
+          viewer.dataSources.add(dataSource);
+        }
+			} else {
+				if (viewer.dataSources.contains(dataSource)) {
+          viewer.dataSources.remove(dataSource);
+        }
+			}
+    }
+    
+    function createModel(dLon, dLat, dHeight, dHeading, dPitch, url) {
+      var position = Cesium.Cartesian3.fromDegrees(dLon, dLat, dHeight);
+      var heading = Cesium.Math.toRadians(dHeading);
+      var pitch = Cesium.Math.toRadians(dPitch);
+      var roll = 0;
+      var hpr = new Cesium.HeadingPitchRoll(heading, pitch, roll);
+      var orientation = Cesium.Transforms.headingPitchRollQuaternion(position, hpr);
+      var entity = viewer.entities.add({
+        name : url,
+        position : position,
+        orientation : orientation,
+        model : {
+          uri : url
+        }
+      });
+      // viewer.trackedEntity = entity;
+    }
+    createModel(104.006539, 1.338092, 10.0, 115, 10, '/Data/models/air.glb');
+
   </script>
+
 </body>
 </html>

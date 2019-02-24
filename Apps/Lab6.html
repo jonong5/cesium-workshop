@@ -14,12 +14,86 @@
       html, body, #cesiumContainer {
           width: 100%; height: 100%; margin: 0; padding: 0; overflow: hidden;
       }
+      .menu {
+        position: absolute;
+        z-index: 1000;
+        margin: 1.5em;
+        padding: 1.5em;
+        background: #ebedf4;
+      }
   </style>
 </head>
 <body>
+  
+  <div class="menu">
+    <div>Traffic Cameras<input type="checkbox" id="cameraCheckbox" checked onclick="toggleLayer(cameraCheckbox, cameraDataSource);" /></div>
+  </div>
+
   <div id="cesiumContainer"></div>
   <script>
-    var viewer = new Cesium.Viewer('cesiumContainer');
+    Cesium.Camera.DEFAULT_VIEW_RECTANGLE = Cesium.Rectangle.fromDegrees(103.6, 1.2, 104.0, 1.5);
+    Cesium.Camera.DEFAULT_VIEW_FACTOR = 0;
+    var viewer = new Cesium.Viewer('cesiumContainer', {
+      imageryProvider: new Cesium.UrlTemplateImageryProvider({
+        url: "http://localhost:8080/Tiles/{z}/{y}/{z}_y{y}_x{x}.png"
+      }),
+      baseLayerPicker: false,
+      geocoder: false
+    });
+
+    var cameraDataSource = new Cesium.GeoJsonDataSource();
+		cameraDataSource.load('/Data/geojson/camera.geojson').then(function(dataSource) {
+			var entities = dataSource.entities.values;
+			for (var i = 0; i < entities.length; i++) {
+        var entity = entities[i];
+        var billboard = new Cesium.BillboardGraphics();
+		    billboard.image = new Cesium.ConstantProperty('/Data/icons/camera.png');
+        entity.billboard = billboard;
+
+				var imagePath = '/Data/images/' + entity.properties.images;
+        entity.description = '<table width="200" height="280">' +
+								'<tr><td colspan="2"><img src="' + imagePath + '" width="300"/></td></tr>' +
+                '</table>';
+			}
+    });
+    viewer.dataSources.add(cameraDataSource);
+
+    function toggleLayer(id, dataSource) {
+			if (id.checked) {
+				if (!viewer.dataSources.contains(dataSource)) {
+          viewer.dataSources.add(dataSource);
+        }
+			} else {
+				if (viewer.dataSources.contains(dataSource)) {
+          viewer.dataSources.remove(dataSource);
+        }
+			}
+    }
+    
+    /* Step 6a: Add sample function to create 3D model */
+    /*
+    function createModel(dLon, dLat, dHeight, dHeading, dPitch, url) {
+      var position = Cesium.Cartesian3.fromDegrees(dLon, dLat, dHeight);
+      var heading = Cesium.Math.toRadians(dHeading);
+      var pitch = Cesium.Math.toRadians(dPitch);
+      var roll = 0;
+      var hpr = new Cesium.HeadingPitchRoll(heading, pitch, roll);
+      var orientation = Cesium.Transforms.headingPitchRollQuaternion(position, hpr);
+      var entity = viewer.entities.add({
+        name : url,
+        position : position,
+        orientation : orientation,
+        model : {
+          uri : url
+        }
+      });
+      viewer.trackedEntity = entity;
+    }
+    */
+    /* Step 6b: Create the 3D model */
+    // createModel(104.006539, 1.338092, 10.0, 115, 10, '/Data/models/air.glb');
+
   </script>
+
 </body>
 </html>

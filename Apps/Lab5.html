@@ -14,12 +14,47 @@
       html, body, #cesiumContainer {
           width: 100%; height: 100%; margin: 0; padding: 0; overflow: hidden;
       }
+      /* Step 5b: Add CSS for layer menu */
+
   </style>
 </head>
 <body>
+  
+  <!-- Step 5a: Add HTML checkbox to toggle layer --> 
+
+
   <div id="cesiumContainer"></div>
   <script>
-    var viewer = new Cesium.Viewer('cesiumContainer');
+    Cesium.Camera.DEFAULT_VIEW_RECTANGLE = Cesium.Rectangle.fromDegrees(103.6, 1.2, 104.0, 1.5);
+    Cesium.Camera.DEFAULT_VIEW_FACTOR = 0;
+    var viewer = new Cesium.Viewer('cesiumContainer', {
+      imageryProvider: new Cesium.UrlTemplateImageryProvider({
+        url: "http://localhost:8080/Tiles/{z}/{y}/{z}_y{y}_x{x}.png"
+      }),
+      baseLayerPicker: false,
+      geocoder: false
+    });
+
+    var cameraDataSource = new Cesium.GeoJsonDataSource();
+		cameraDataSource.load('/Data/geojson/camera.geojson').then(function(dataSource) {
+			var entities = dataSource.entities.values;
+			for (var i = 0; i < entities.length; i++) {
+        var entity = entities[i];
+        var billboard = new Cesium.BillboardGraphics();
+		    billboard.image = new Cesium.ConstantProperty('/Data/icons/camera.png');
+        entity.billboard = billboard;
+
+				var imagePath = '/Data/images/' + entity.properties.images;
+        entity.description = '<table width="200" height="280">' +
+								'<tr><td colspan="2"><img src="' + imagePath + '" width="300"/></td></tr>' +
+                '</table>';
+			}
+    });
+    viewer.dataSources.add(cameraDataSource);
+
+    /* Step 5c: Add function to toggle layer when checkbox is clicked */
+
   </script>
+
 </body>
 </html>
